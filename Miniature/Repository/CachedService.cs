@@ -13,6 +13,8 @@ namespace Miniature.Repository
         private IDatabase _db;
 
         private readonly IConfiguration _configuration;
+
+#pragma warning disable CS8618
         public CachedService(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -21,6 +23,7 @@ namespace Miniature.Repository
             SetIdKeyValue();
         }
 
+#pragma warning disable CS8618 
         public CachedService(IConfiguration configuration, string idKey)
         {
             _configuration = configuration;
@@ -34,7 +37,7 @@ namespace Miniature.Repository
             string? connection = _configuration.GetValue<string>("RedisConnString");
             var config = new ConfigurationOptions()
             {
-                EndPoints = { connection },
+                EndPoints = { connection ?? string.Empty },
                 AbortOnConnectFail = false,
             };
             Console.WriteLine($"Connection String={connection}");
@@ -44,9 +47,9 @@ namespace Miniature.Repository
 
         private void SetIdKeyValue()
         {
-            _db.StringIncrement(_idKey, 1000);
+            _db.StringIncrement(_idKey, 10000000);
         }
-       
+
         public async Task<long> Increment()
         {
             long value = await _db.StringIncrementAsync(_idKey);

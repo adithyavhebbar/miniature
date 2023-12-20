@@ -17,8 +17,8 @@ namespace Miniature.Services
         {
             IDConverter = IDConverter.GetInstance();
             _cacheService = cachedService;
-            _basePath = Environment.GetEnvironmentVariable("BasePath");
-            _httpScheme = Environment.GetEnvironmentVariable("Scheme");
+            _basePath = Environment.GetEnvironmentVariable("BasePath") ?? string.Empty;
+            _httpScheme = Environment.GetEnvironmentVariable("Scheme") ?? string.Empty;
         }
         public async Task<string> Expand(string shortenedValue)
         {
@@ -46,13 +46,13 @@ namespace Miniature.Services
         public async Task<string> Shorten(string Url)
         {
             long id = await _cacheService.Increment();
-            string shortenedUrl = await CreateUniqueId(id);
+            string shortenedUrl = CreateUniqueId(id);
 
             await _cacheService.Set(id, Url);
             return $"{_httpScheme}://{_basePath}/{shortenedUrl}";
         }
 
-        private async Task<string> CreateUniqueId(long id)
+        private string CreateUniqueId(long id)
         {
             List<int> base62Id = ConvertBase10ToBase62(id);
 
